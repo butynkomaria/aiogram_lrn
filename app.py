@@ -1,11 +1,23 @@
 async def on_startup(dp):
-
     import filters
     filters.setup(dp)
     import middlewares
+
     middlewares.setup(dp)
 
-    from utils.notify_admins import on_startup_notify
+    from loader import db
+    from utils.db_api.db_gino import on_startup
+    print('Подключение к PostgreSQL')
+    await on_startup(dp)
+
+    #print('Удаление БД')
+    #await db.gino.drop_all()
+
+    print('Создание таблиц')
+    await db.gino.create_all()
+    print('Готово')
+
+    from utils.notify_admins import on_startup_notify # оповещаем администраторов о том, что бот старотовал
     await on_startup_notify(dp)
 
 
