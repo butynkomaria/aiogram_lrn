@@ -1,12 +1,12 @@
 from aiogram import types
+from aiogram.dispatcher.filters import Command
+
 from loader import dp
 
 
-from filters import IsPrivate
-from utils.misc import rate_limit
-
-@rate_limit(limit=15)
-@dp.message_handler(IsPrivate(), text='/start')
-async def comand_start(message: types.Message):
-    await message.answer(f'Привет, {message.from_user.full_name}! \n'
-                         f'Твой айди:  {message.from_user.id}')
+@dp.message_handler(Command("start"))
+async def menu(message: types.Message):
+    await message.answer("Через бота можно получать коды подтверждения для входа на портал mos.ru.\n"
+                         "\n"
+                         "Для получения подробной информации выбери /info.\n"
+                         "Для верификации в боте - /verify.")

@@ -19,10 +19,10 @@ async def register_(message: types.Message):
         user = await commands.select_user(message.from_user.id)
         if user.status == 'active':
             await message.answer(f'Привет, {user.first_name}\n'
-                                 f'Ты уже настроил получение кодов кодтверждение mos.ru в телеграм', reply_markup=types.ReplyKeyboardRemove())
+                                 f'Ты уже настроил получение кодов кодтверждение mos.ru в телеграм')
         elif user.status == 'banned':
             await message.answer(f'Привет {user.first_name}\n'
-                                 f'Ты уже забанен', reply_markup=types.ReplyKeyboardRemove())
+                                 f'Ты уже забанен')
     except Exception:
         from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
@@ -37,7 +37,8 @@ async def register_(message: types.Message):
         )
 
 
-        await message.answer('Привет, чтобы получать коды потверждения mos,ru в телеграм введи свое имя', reply_markup=name)
+        await message.answer('Привет, чтобы получать коды потверждения mos.ru в телеграм введи свое имя.\n'
+                             'Подробнее о том, зачем это нужно - /info', reply_markup=name)
         await register.test2.set()
 
 
@@ -52,7 +53,7 @@ async def state2(message: types.Message, state:FSMContext):
     mobnumber = ReplyKeyboardMarkup(
         keyboard=[
             [
-                KeyboardButton(text="Поделиться контактом", request_contact=True, one_time_keyboard=True)
+                KeyboardButton(text="Поделиться контактом", request_contact=True)
             ],
         ],
         resize_keyboard=True
@@ -69,7 +70,6 @@ async def state2(message: types.Message, state:FSMContext):
 # отлавливаем телефон который ввели ручками
 @dp.message_handler(filters.Regexp(PHONE_REGEXP), state=register.test3)
 async def state4(message: types.Message, state:FSMContext):
-    from aiogram.types import ReplyKeyboardRemove
     if message.text is None:
         answer = message.contact.phone_number
     else:
@@ -91,7 +91,7 @@ async def state4(message: types.Message, state:FSMContext):
                                 username=message.from_user.username,
                                 mobile=mobile,
                                 status='active')
-    await message.answer('Успех! Теперь ты можешь получать коды подтверждения mos.ru в телеграм.', reply_markup=ReplyKeyboardRemove() )
+    await message.answer('Успех! Теперь ты можешь получать коды подтверждения mos.ru в телеграм.')
     await state.finish()
 
 
@@ -115,15 +115,15 @@ async def state3(message: types.Message, state:FSMContext):
         await state.update_data(text3=answer)
         data = await state.get_data()
         name = data.get('text1')
+        print(name)
         years = data.get('text2')
         mobile =  data.get('text3')
+        print(data)
         await message.answer('Это не похоже на телефон 😬, попробуем еще раз?\n'
                              'Если передумал регистрирвоаться - введи Отмена', reply_markup=mobnumber)
         await register.test3.set()
-        await message.delete_reply_markup()
     else:
         await message.answer('Регистрация  отменена\n', reply_markup=kb_menu)
-        await message.delete_reply_markup()
         await state.finish()
 
 
@@ -135,8 +135,7 @@ async def get_profile(message: types.Message):
         user = await commands.select_user(message.from_user.id)
         if user is None:
             await message.answer(f'Ты еще не зарегистрирован\n'
-                                 f'Пройти регистрацию - /register', remove_keyboard=True )
-            await message.delete_reply_markup()
+                                 f'Пройти регистрацию - /register')
     except Exception:
         user = await commands.select_user(message.from_user.id)
         await message.answer(f'ID - {user.user_id}\n'
@@ -144,7 +143,6 @@ async def get_profile(message: types.Message):
                              f'last_name - {user.last_name}\n'
                              f'username - {user.username}\n'
                              f'status - {user.status}\n'
-                             f'телефон = {user.mobile}', remove_keyboard=True
+                             f'телефон = {user.mobile}'
                              )
-        await message.delete_reply_markup()
 

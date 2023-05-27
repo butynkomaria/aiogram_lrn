@@ -1,8 +1,7 @@
 async def on_startup(dp):
-    import filters
-    filters.setup(dp)
+    #import filters
+    #filters.setup(dp)
     import middlewares
-
     middlewares.setup(dp)
 
     from loader import db

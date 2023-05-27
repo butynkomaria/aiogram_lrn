@@ -25,8 +25,11 @@ async def select_user(user_id):
     user = await User.query.where(User.user_id == user_id).gino.first()
     return user
 
+async def select_user_by_mobile(mobile):
+    user = await User.select('user_id').where(User.mobile == mobile).gino.first()
+    return user
+
 async def update_status(user_id, status):
     user = await select_user(user_id)
     await user.update(status=status).apply()
-
 
